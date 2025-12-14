@@ -5,14 +5,16 @@ import plotly.express as px
 
 # --- Load Assets ---
 try:
-    # --- MODIFIED FILE NAMES HERE ---
+    # Model name remains the same (as per last instruction)
     rfc = joblib.load('random_forest_model.joblib')
-    scaler = joblib.load('minmax_scalers.joblib') 
-    # --------------------------------
+    
+    # --- SCALER FILE NAME REVERTED HERE ---
+    scaler = joblib.load('scaler (1).pkl') 
+    # -------------------------------------
 
 except FileNotFoundError:
-    # Updated error message to reflect new file names
-    st.error("Error: Ensure 'random_forest_model.joblib' and 'minmax_scalers.joblib' are in the same folder.")
+    # Updated error message to reflect current file names
+    st.error("Error: Ensure 'random_forest_model.joblib' and 'scaler (1).pkl' are in the same folder.")
     st.stop()
 
 st.title("Weather Prediction App (RFC Model)")
@@ -46,10 +48,17 @@ if st.button('Predict Outcome'):
     
     # 1. Prepare data for model prediction (only the 3 features)
     prediction_data = raw_input_df[['temp', 'humidity', 'windspeed']]
-    scaled_input_array = scaler.transform(prediction_data)
-    prediction = rfc.predict(scaled_input_array)
-    predicted_value = prediction 
     
+    # Assuming the 'scaler' variable now holds the correct scaler object
+    try:
+        scaled_input_array = scaler.transform(prediction_data)
+        prediction = rfc.predict(scaled_input_array)
+        predicted_value = prediction 
+    
+    except AttributeError:
+        st.error("Prediction Failed: The loaded 'scaler' object does not have a '.transform()' method. Please ensure 'scaler (1).pkl' contains a valid Scikit-learn scaler object (e.g., StandardScaler or MinMaxScaler).")
+        st.stop()
+        
     st.subheader('Prediction Result')
     st.success(f"The model predicts: {predicted_value}")
     
@@ -60,7 +69,7 @@ if st.button('Predict Outcome'):
 
     # 3. Create the Plotly figure using the 'map_data' DataFrame:
     fig = px.scatter_mapbox(
-        map_data, # Pass the prepared DataFrame here
+        map_data, 
         lat="lat", 
         lon="long", 
         color="prediction_value", 
