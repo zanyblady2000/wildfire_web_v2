@@ -1,55 +1,75 @@
+import streamlit as st
 import joblib
 import pandas as pd
-import numpy as np
+import plotly.express as px
 
-# Load the trained model and scalers
-model = joblib.load('random_forest_model.joblib')
-scalers = joblib.load('minmax_scalers.joblib')
+# --- Load Assets ---
+try:
+    # --- MODIFIED FILE NAMES HERE ---
+    rfc = joblib.load('random_forest_model.joblib')
+    scaler = joblib.load('minmax_scalers.joblib') 
+    # --------------------------------
 
-# Extract individual scalers
-scaler_temp = scalers['temp_scaler']
-spec_scaler_humidity = scalers['humidity_scaler']
-spec_scaler_wind_speed = scalers['windspeed_scaler']
+except FileNotFoundError:
+    # Updated error message to reflect new file names
+    st.error("Error: Ensure 'random_forest_model.joblib' and 'minmax_scalers.joblib' are in the same folder.")
+    st.stop()
 
-def preprocess_input(temp, humidity, windspeed):
-    """
-    Preprocesses new input data using the loaded MinMaxScaler objects.
-    """
-    # Scale the input features. To avoid UserWarning, provide inputs as DataFrame with original feature names.
-    scaled_temp = scaler_temp.transform(pd.DataFrame([[temp]], columns=['feature_0']))
-    scaled_humidity = spec_scaler_humidity.transform(pd.DataFrame([[humidity]], columns=['feature_1']))
-    scaled_windspeed = spec_scaler_wind_speed.transform(pd.DataFrame([[windspeed]], columns=['feature_2']))
+st.title("Weather Prediction App (RFC Model)")
+st.sidebar.header("Input Weather Conditions")
 
-    # Create a DataFrame for prediction
-    preprocessed_data = pd.DataFrame({
-        'temp': scaled_temp.flatten(),
-        'humidity': scaled_humidity.flatten(),
-        'windspeed': scaled_windspeed.flatten()
-    })
-    return preprocessed_data
+# --- User Input Function ---
+def user_input_features():
+    """Collects user inputs via Streamlit sidebar sliders."""
+    temp = st.sidebar.slider('Temperature (°C)', -10.0, 40.0, 20.0)
+    humidity = st.sidebar.slider('Humidity (%)', 0.0, 100.0, 50.0)
+    windspeed = st.sidebar.slider('Windspeed (km/h)', 0.0, 50.0, 15.0)
+    lat = st.sidebar.slider('Latitude', 0.0, 59.0, 50.0)
+    long = st.sidebar.slider('Longitude', -180.0, 180.0, -100.0) 
 
-def predict_fire_occurrence(temp, humidity, windspeed):
-    """
-    Predicts fire occurrence based on temperature, humidity, and wind speed.
-    """
-    # Preprocess the input data
-    processed_input = preprocess_input(temp, humidity, windspeed)
+    data = {'temp': temp, 'humidity': humidity, 'windspeed': windspeed,
+            'lat': lat, 'long': long}
+            
+    features_df = pd.DataFrame(data, index=[0]) 
+    return features_df
 
-    # Make prediction
-    prediction = model.predict(processed_input)
-    return prediction[0]
+# --- Main App Logic ---
 
-if __name__ == '__main__':
-    print("--- app.py started ---")
-    # Example usage:
-    temp1, humidity1, windspeed1 = 15, 60, 20
-    prediction1 = predict_fire_occurrence(temp1, humidity1, windspeed1)
-    print(f"For Temp={temp1}°C, Humidity={humidity1}%, Wind Speed={windspeed1} km/h: Fire Occurrence = {prediction1}")
+# Define the raw input DataFrame (this runs every time)
+raw_input_df = user_input_features() 
 
-    temp2, humidity2, windspeed2 = 32, 25, 45
-    prediction2 = predict_fire_occurrence(temp2, humidity2, windspeed2)
-    print(f"For Temp={temp2}°C, Humidity={humidity2}%, Wind Speed={windspeed2} km/h: Fire Occurrence = {prediction2}")
+st.subheader('User Input Features (Raw)')
+st.write(raw_input_df)
 
-    temp3, humidity3, windspeed3 = 28, 35, 25
-    prediction3 = predict_fire_occurrence(temp3, humidity3, windspeed3)
-    print(f"For Temp={temp3}°C, Humidity={humidity3}%, Wind Speed={windspeed3} km/h: Fire Occurrence = {prediction3}")
+# The code INSIDE this 'if' block ONLY runs when the button is clicked:
+if st.button('Predict Outcome'):
+    
+    # 1. Prepare data for model prediction (only the 3 features)
+    prediction_data = raw_input_df[['temp', 'humidity', 'windspeed']]
+    scaled_input_array = scaler.transform(prediction_data)
+    prediction = rfc.predict(scaled_input_array)
+    predicted_value = prediction 
+    
+    st.subheader('Prediction Result')
+    st.success(f"The model predicts: {predicted_value}")
+    
+    # 2. Prepare data for Plotly map visualization
+    map_data = raw_input_df.copy()
+    map_data['prediction_value'] = predicted_value
+    prediction_mapping = {0: 'Low', 1: 'High'} 
+
+    # 3. Create the Plotly figure using the 'map_data' DataFrame:
+    fig = px.scatter_mapbox(
+        map_data, # Pass the prepared DataFrame here
+        lat="lat", 
+        lon="long", 
+        color="prediction_value", 
+        color_discrete_map={'High': 'red', 'Low': 'green'}, 
+        zoom=5,             
+        height=400,
+        mapbox_style="carto-positron", 
+        hover_data=['temp', 'humidity', 'windspeed', 'prediction_value'] 
+    )
+    
+    # 4. Display the figure using st.plotly_chart
+    st.plotly_chart(fig, use_container_width=True)
