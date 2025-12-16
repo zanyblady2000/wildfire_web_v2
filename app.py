@@ -11,13 +11,13 @@ st.set_page_config(layout="wide", page_title="Simple Weather Prediction App")
 def load_assets():
     """Loads the model and scaler only once, using the updated file names."""
     try:
-        # --- UPDATED FILE NAMES HERE ---
-        rfc = joblib.load('random_forest_model (1).joblib')
-        scaler = joblib.load('scaler (1) (1).pkl')
+        # --- CORRECTED FILE NAMES HERE ---
+        rfc = joblib.load('random_forest_model.joblib') # Corrected model file name
+        scaler = joblib.load('scaler (1).pkl')         # Corrected scaler file name
         # -------------------------------
         return rfc, scaler
     except FileNotFoundError:
-        st.error("Error: Ensure 'random_forest_model (1).joblib' and 'scaler (1) (1).pkl' are in the directory.")
+        st.error("Error: Ensure 'random_forest_model.joblib' and 'scaler (1).pkl' are in the directory.")
         st.stop()
     except Exception as e:
         st.error(f"Error loading assets: {e}")
