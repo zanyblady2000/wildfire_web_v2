@@ -53,7 +53,7 @@ def user_input_features():
 
 # --- Main App Logic ---
 
-st.title("☀️ Simple Weather Prediction App")
+st.title("Wildfire Prediction App")
 input_df = user_input_features()
 
 # Display input data (optional)
@@ -61,7 +61,7 @@ st.subheader('Current Input')
 st.dataframe(input_df[['temp', 'humidity', 'windspeed', 'lat', 'long']], use_container_width=True)
 
 # Prediction button and logic
-if st.button('Predict Weather Outcome', type="primary"):
+if st.button('Predict Wildfire Outcome', type="primary"):
     
     with st.spinner('Calculating prediction...'):
         # 1. Prepare and scale the 3 required features
@@ -73,17 +73,10 @@ if st.button('Predict Weather Outcome', type="primary"):
         proba = rfc.predict_proba(scaled_input)[0]
         
         # 3. Map result for display
-        label = {0: 'Low Chance of Adverse Weather', 1: 'High Chance of Adverse Weather'}
+        label = {0: 'Low Chance of Fire', 1: 'High Chance of Fire'}
         
         # --- Display Results ---
         st.subheader("Prediction Result")
-        
-        if prediction == 1:
-            st.error(f"⚠️ **Prediction: {label[1]}**")
-            st.markdown(f"**Model Confidence:** {proba[1]:.2f}")
-        else:
-            st.success(f"✅ **Prediction: {label[0]}**")
-            st.markdown(f"**Model Confidence:** {proba[0]:.2f}")
 
         # --- Map Visualization ---
         
