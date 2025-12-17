@@ -77,7 +77,13 @@ if st.button('Predict Wildfire Outcome', type="primary"):
         
         # --- Display Results ---
         st.subheader("Prediction Result")
-        st.success(f"The predicted outcome is: **{label}**")
+        fire_risk_label = "High" if prediction[0] == 1 else "Low"
+
+        if fire_risk_label == "High":
+            st.error(f"Predicted Fire Risk: **{fire_risk_label}**")
+        else:
+            st.success(f"Predicted Fire Risk: **{fire_risk_label}**")
+        
         # --- Map Visualization ---
         
         # Prepare data for map (add prediction label and class)
@@ -87,7 +93,7 @@ if st.button('Predict Wildfire Outcome', type="primary"):
         # Create the map visualization
         fig = px.scatter_mapbox(
             map_df, 
-            lat="lat", 
+            lat="lat",
             lon="long", 
             color="prediction_label", 
             color_discrete_map={label[1]: 'red', label[0]: 'green'},
