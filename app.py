@@ -77,7 +77,7 @@ if st.button('Predict Wildfire Outcome', type="primary"):
         
         # --- Display Results ---
         st.subheader("Prediction Result")
-        st.success(f"The predicted outcome is: **{prediction}**")
+        st.success(f"The predicted outcome is: **{label}**")
         # --- Map Visualization ---
         
         # Prepare data for map (add prediction label and class)
