@@ -77,7 +77,7 @@ if st.button('Predict Wildfire Outcome', type="primary"):
         
         # --- Display Results ---
         st.subheader("Prediction Result")
-        fire_risk_label = "High" if prediction[0] == 1 else "Low"
+        fire_risk_label = "High" if prediction == 1 else "Low"
 
         if fire_risk_label == "High":
             st.error(f"Predicted Fire Risk: **{fire_risk_label}**")
