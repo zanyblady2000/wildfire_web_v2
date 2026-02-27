@@ -4,30 +4,13 @@ import pandas as pd
 import plotly.express as px
 
 
-st.set_page_config(layout="wide", page_title="Simple Weather Prediction App")
+st.set_page_config(layout="wide", page_title="Wildfire Prediction Web-app")
 
-@st.cache_resource
-def load_assets():
-    """Loads the model and scaler only once, using the updated file names."""
-    try:
       
-        rfc = joblib.load('random_forest_model.joblib')
-        scaler = joblib.load('scaler (1).pkl')         
-  
-        return rfc, scaler
-    except FileNotFoundError:
-        st.error("Error: Ensure 'random_forest_model.joblib' and 'scaler (1).pkl' are in the directory.")
-        st.stop()
-    except Exception as e:
-        st.error(f"Error loading assets: {e}")
-        st.stop()
-
-rfc, scaler = load_assets()
-
-
+ rfc = joblib.load('random_forest_model.joblib')
+ scaler = joblib.load('scaler (1).pkl')         
 
 def user_input_features():
-    """Collects user inputs via Streamlit sidebar sliders."""
     st.sidebar.header("Input Conditions")
     
     temp = st.sidebar.slider('1. Temperature (°C)', 0.0, 35.0, 20.0)
@@ -49,17 +32,13 @@ def user_input_features():
     }
     return pd.DataFrame(data, index=[0])
 
-
-
 st.title("Wildfire Prediction App")
 input_df = user_input_features()
-
 
 st.subheader('Current Input')
 st.dataframe(input_df[['temp', 'humidity', 'windspeed', 'lat', 'long']], use_container_width=True)
 
-
-if st.button('Predict Wildfire Outcome', type="primary"):
+if st.button('Predict Wildfire Outcome'):
     
     with st.spinner('Calculating prediction...'):
         
