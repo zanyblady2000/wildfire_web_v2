@@ -7,8 +7,8 @@ import plotly.express as px
 st.set_page_config(layout="wide", page_title="Wildfire Prediction Web-app")
 
       
- rfc = joblib.load('random_forest_model.joblib')
- scaler = joblib.load('scaler (1).pkl')         
+rfc = joblib.load('random_forest_model.joblib')
+scaler = joblib.load('scaler (1).pkl')         
 
 def user_input_features():
     st.sidebar.header("Input Conditions")
