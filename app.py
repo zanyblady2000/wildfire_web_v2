@@ -45,24 +45,13 @@ if st.button('Predict Wildfire Outcome'):
         prediction_data = input_df[['temp', 'humidity', 'windspeed']]
         scaled_input = scaler.transform(prediction_data)
         
-    
         prediction = rfc.predict(scaled_input)[0]
         proba = rfc.predict_proba(scaled_input)[0]
         
-      
         label = {0: 'Low Chance of Fire', 1: 'High Chance of Fire'}
         
- 
         st.subheader("Prediction Result")
         fire_risk_label = "High" if prediction == 1 else "Low"
-
-        if fire_risk_label == "High":
-            st.error(f"Predicted Fire Risk: **{fire_risk_label}**")
-        else:
-            st.success(f"Predicted Fire Risk: **{fire_risk_label}**")
-        
-
-        
 
         map_df = input_df.copy()
         map_df['prediction_label'] = label[prediction]
