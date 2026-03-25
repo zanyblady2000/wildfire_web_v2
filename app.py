@@ -47,8 +47,8 @@ if st.button('Predict Wildfire Within Area'):
      st.success(f"Predicted Fire Risk: **{fire_risk_label}**")
       
             
-      map_df = input_df.copy()
-      map_df['prediction_label'] = fire_risk_label[prediction.item()]
+     map_df = input_df.copy()
+     map_df['prediction_label'] = fire_risk_label[prediction.item()]
         
        
         fig = px.scatter_mapbox(
