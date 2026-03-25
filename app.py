@@ -51,7 +51,7 @@ if st.button('Predict Wildfire Within Area'):
      map_df['prediction_label'] = fire_risk_label[prediction.item()]
         
        
-        fig = px.scatter_mapbox(
+     fig = px.scatter_mapbox(
             map_df, 
             lat="lat",
             lon="long", 
@@ -64,5 +64,5 @@ if st.button('Predict Wildfire Within Area'):
             hover_data=['temp', 'humidity', 'windspeed']
         )
         
-        st.subheader("Location Visualization")
-        st.plotly_chart(fig, use_container_width=True)
+     st.subheader("Location Visualization")
+     st.plotly_chart(fig, use_container_width=True)
