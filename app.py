@@ -4,10 +4,10 @@ import pandas as pd
 import plotly.express as px
 
 
-rfc = joblib.load('random_forest_model.joblib')
+rfc = joblib.load('random_forest_model.joblib') # Using joblib to import the trained ML model and scaler
 scaler = joblib.load('scaler (1).pkl')         
 
-def Inputs():
+def Inputs(): # Defining inputs for prediction and returning the inputs as a DataFrame
   st.sidebar.header("Inputs For Prediction")
 
   temp = st.sidebar.slider('Temperature (C*)', 15, 35, 20)
@@ -30,11 +30,11 @@ def Inputs():
 st.title("Flame Cast")
 input_df = Inputs()
 
-if st.button('Predict Wildfire Within Area'):
+if st.button('Predict Wildfire Within Area'): # Scales the prediction inputs and makes a prediction.
   prediction_data = input_df[['temp', 'humidity', 'windspeed']]
   scaled_input = scaler.transform(prediction_data)
 
-  prediction = rfc.predict(scaled_input)
+  prediction = rfc.predict(scaled_input) # The prediction value is either 0 or 1.
 
   prediction_label = {0: 'Low Chance of Fire', 1: 'High Chance of Fire'}
 
@@ -46,12 +46,10 @@ if st.button('Predict Wildfire Within Area'):
   else:
      st.success(f"Predicted Fire Risk: **{fire_risk_label}**")
       
-            
      map_df = input_df.copy()
-     map_df['prediction_label'] = fire_risk_label[prediction.item()]
+     map_df['prediction_label'] = fire_risk_label[prediction.item()] 
         
-       
-     fig = px.scatter_mapbox(
+     fig = px.scatter_mapbox( # Makes a visual map to display the prediction
             map_df, 
             lat="lat",
             lon="long", 
