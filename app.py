@@ -58,7 +58,6 @@ if st.button('Predict Wildfire Within Area'):
             color="prediction_label", 
             color_discrete_map={fire_risk_label[1]: 'red', fire_risk_label[0]: 'green'},
             zoom=8, 
-            center={"lat": map_df['lat'].iloc[0], "lon": map_df['long'].iloc[0]},
             height=500,
             mapbox_style="carto-positron", 
             hover_data=['temp', 'humidity', 'windspeed']
